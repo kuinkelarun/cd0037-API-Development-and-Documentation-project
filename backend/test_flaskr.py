@@ -12,8 +12,8 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.database_name = "trivia_test"
         self.database_user = "postgres"
-        self.database_password = "password"
-        self.database_host = "localhost:5432"
+        self.database_password = "postgres"  # postgres URL encoded
+        self.database_host = "localhost:5433"
         self.database_path = f"postgresql://{self.database_user}:{self.database_password}@{self.database_host}/{self.database_name}"
 
         # Create app with the test configuration
@@ -38,6 +38,12 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+    def test_get_questions_success(self):
+        res = self.client.get("/questions?page=1")
+        data = res.get_json()
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["success"])
+        self.assertGreaterEqual(len(data["questions"]), 2)
 
 
 # Make the tests conveniently executable

@@ -31,6 +31,181 @@ The [backend](./backend/README.md) directory contains a partially completed Flas
 
 > View the [Backend README](./backend/README.md) for more details.
 
+## API Endpoints
+
+Base URL: `http://127.0.0.1:5000`
+
+---
+
+### GET /categories
+- Description: Fetches all categories as a dictionary of `id: type`.
+- Request args: None
+- Response (200):
+
+```json
+{
+	"success": true,
+	"categories": {
+		"1": "Science",
+		"2": "Art",
+		"3": "Geography",
+		"4": "History",
+		"5": "Entertainment",
+		"6": "Sports"
+	}
+}
+```
+
+---
+
+### GET /questions
+- Description: Fetches paginated questions (10 per page), list of categories and total count.
+- Request args:
+	- `page` (optional, integer) — page number, default `1`
+- Response (200):
+
+```json
+{
+	"success": true,
+	"questions": [
+		{
+			"id": 1,
+			"question": "What is H2O?",
+			"answer": "Water",
+			"difficulty": 1,
+			"category": "1"
+		}
+		// up to 10 items
+	],
+	"total_questions": 30,
+	"categories": {
+		"1": "Science",
+		"2": "Art"
+	},
+	"current_category": null
+}
+```
+- Errors:
+	- `404` if requested page has no results (page > available pages)
+	- `422` on other failures
+
+---
+
+### DELETE /questions/{question_id}
+- Description: Deletes the question with the given id.
+- Request args: `question_id` (path)
+- Response (200):
+
+```json
+{
+	"success": true,
+	"deleted": 5
+}
+```
+- Errors:
+	- `404` if question not found
+	- `422` on failure
+
+---
+
+### POST /questions
+- Description: Adds a new question.
+- Request body (JSON):
+
+```json
+{
+	"question": "What is the capital of France?",
+	"answer": "Paris",
+	"category": "3",
+	"difficulty": 2
+}
+```
+- Response (201/200):
+
+```json
+{
+	"success": true,
+	"created": 27
+}
+```
+- Errors:
+	- `400` for missing fields
+	- `422` on failure
+
+---
+
+### POST /questions/search
+- Description: Searches questions by a search term (case-insensitive substring match).
+- Request body (JSON):
+
+```json
+{ "searchTerm": "H2O" }
+```
+- Response (200):
+
+```json
+{
+	"success": true,
+	"questions": [ /* matching questions */ ],
+	"total_questions": 1,
+	"current_category": null
+}
+```
+
+---
+
+### GET /categories/{category_id}/questions
+- Description: Fetches questions for the given category.
+- Request args: `category_id` (path)
+- Response (200):
+
+```json
+{
+	"success": true,
+	"questions": [ /* category questions */ ],
+	"total_questions": 1,
+	"current_category": "History"
+}
+```
+
+---
+
+### POST /quizzes
+- Description: Returns a random question for quizzes, respecting `previous_questions` and optional category filter.
+- Request body (JSON):
+
+```json
+{
+	"previous_questions": [5,9],
+	"quiz_category": { "id": 1, "type": "Science" }
+}
+```
+- Response (200) when a question is available:
+
+```json
+{
+	"success": true,
+	"question": { "id": 12, "question": "What is H2O?", "answer": "Water", "difficulty": 1, "category": "1" }
+}
+```
+- Response (200) when no questions remain:
+
+```json
+{ "success": true, "question": null }
+```
+
+---
+
+### Error responses (format for 400/404/422/500)
+
+```json
+{
+	"success": false,
+	"error": 404,
+	"message": "Resource not found"
+}
+```
+
 ### Frontend
 
 The [frontend](./frontend/README.md) directory contains a complete React frontend to consume the data from the Flask server. If you have prior experience building a frontend application, you should feel free to edit the endpoints as you see fit for the backend you design. If you do not have prior experience building a frontend application, you should read through the frontend code before starting and make notes regarding:
